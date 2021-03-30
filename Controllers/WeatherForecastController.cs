@@ -3,19 +3,42 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
 using Google.Api.Gax.ResourceNames;
 using Google.Protobuf;
 using System.Text;
+using StackExchange.Redis;
+using Microsoft.Extensions.Configuration;
 
 namespace GCPCloudRunSample.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("")]
     public class WeatherForecastController : ControllerBase
     {
+        private static IConfiguration _config;
+        private static Lazy<ConnectionMultiplexer> lazyConnection = CreateConnection();
+
+        public static ConnectionMultiplexer Connection
+        {
+            get
+            {
+                return lazyConnection.Value;
+            }
+        }
+
+        private static Lazy<ConnectionMultiplexer> CreateConnection()
+        {
+            return new Lazy<ConnectionMultiplexer>(() =>
+            {
+                string cacheConnection = _config.GetValue<string>("CacheConnection");
+                return ConnectionMultiplexer.Connect(cacheConnection);
+            });
+        }
+
         private static readonly string[] Summaries = new[]
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
@@ -23,15 +46,19 @@ namespace GCPCloudRunSample.Controllers
 
         private readonly ILogger<WeatherForecastController> _logger;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IConfiguration config)
         {
             _logger = logger;
+            _config = config;
         }
 
         [HttpPost]
         public void StoreSecret([FromForm]string projectId, [FromForm]string secretId)
         {
-           
+            IDatabase db = Connection.GetDatabase();
+
+            db.StringSet("name", "redis");
+            Console.WriteLine(db.StringGet("name"));
             //call SDK
             SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 

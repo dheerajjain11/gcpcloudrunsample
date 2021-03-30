@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="google.cloud.secretmanager.v1" Version="1.3.0" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
+    <PackageReference Include="StackExchange.Redis" Version="2.2.4" />
   </ItemGroup>
 
 </Project>
