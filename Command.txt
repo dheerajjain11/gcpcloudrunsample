@@ -1,0 +1,1 @@
+docker run -p 50015:80 -v c:/learning/gcp:/env --env-file dev-env.txt --link redis:redis 86a3

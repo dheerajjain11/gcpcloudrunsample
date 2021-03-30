@@ -18,10 +18,8 @@ RUN dotnet publish "GCPCloudRunSample.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
-ENV GOOGLE_APPLICATION_CREDENTIALS=/env/fourth-physics-292808-7bf3cd394aee.json
-ENV ASPNETCORE_ENVIRONMENT=DEVELOPMENT
 COPY --from=publish /app/publish .
 RUN apt-get update -y
 RUN apt-get install -y libc6-dev
-RUN apt-get install -y ping
+RUN apt-get install -y iputils-ping
 ENTRYPOINT ["dotnet", "GCPCloudRunSample.dll"]

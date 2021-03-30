@@ -1,0 +1,2 @@
+﻿GOOGLE_APPLICATION_CREDENTIALS=/env/fourth-physics-292808-7bf3cd394aee.json
+ASPNETCORE_ENVIRONMENT=Development
